@@ -17,7 +17,10 @@
 
 from threading import Condition
 
+import rospy
 import cv2
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image  # Import the ROS Image message type
 
 from seekcamera import (
     SeekCameraIOType,
@@ -122,6 +125,10 @@ def on_event(camera, event_type, event_status, renderer):
 
 
 def main():
+    rospy.init_node('thermal_camera_publisher')
+    image_publisher = rospy.Publisher('/thermal_camera/image', Image, queue_size=10)
+    bridge = CvBridge()
+    
     window_name = "Seek Thermal - Python OpenCV Sample"
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
 
@@ -133,7 +140,7 @@ def main():
         renderer = Renderer()
         manager.register_event_callback(on_event, renderer)
 
-        while True:
+        while not rospy.is_shutdown():
             # Wait a maximum of 150ms for each frame to be received.
             # A condition variable is used to synchronize the access to the renderer;
             # it will be notified by the user defined frame available callback thread.
@@ -148,6 +155,9 @@ def main():
                         renderer.first_frame = False
 
                     # Render the image to the window.
+                    image_msg = bridge.cv2_to_imgmsg(img)
+                    image_publisher.publish(image_msg)
+                    
                     cv2.imshow(window_name, img)
 
             # Process key events.

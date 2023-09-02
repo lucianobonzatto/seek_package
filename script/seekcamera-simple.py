@@ -20,6 +20,7 @@ from time import sleep
 import rospy
 import numpy as np
 from sensor_msgs.msg import Image  # Import the ROS Image message type
+# from cv_bridge import CvBridge, CvBridgeError
 
 from seekcamera import (
     SeekCameraIOType,
@@ -51,11 +52,11 @@ def on_frame(camera, camera_frame, file):
     image_msg.header.frame_id = "thermal_camera_frame"  # Set the frame ID
     image_msg.height = frame.height
     image_msg.width = frame.width
-#    image_msg.encoding = "mono8"  # Assuming grayscale thermal data
-#    image_msg.step = frame.width
-#    image_msg.data = frame.data.astype(np.uint8).tostring()
+    image_msg.encoding = "mono8"  # Assuming grayscale thermal data
+    image_msg.step = frame.width
+    image_msg.data = frame.data.astype(np.uint8).tostring()
+    image_publisher.publish(image_msg)
 
-    print(image_msg)
 
 
     print(
@@ -108,12 +109,7 @@ def on_event(camera, event_type, event_status, _user_data):
     elif event_type == SeekCameraManagerEvent.READY_TO_PAIR:
         return
 
-
 def main():
-    rospy.init_node('thermal_camera_publisher')
-    image_publisher = rospy.Publisher('/thermal_camera/image', Image, queue_size=10)
-
-    
     # Create a context structure responsible for managing all connected USB cameras.
     # Cameras with other IO types can be managed by using a bitwise or of the
     # SeekCameraIOType enum cases.
@@ -125,5 +121,7 @@ def main():
             sleep(1.0)
 
 
+rospy.init_node('thermal_camera_publisher')
+image_publisher = rospy.Publisher('/thermal_camera/image', Image, queue_size=10)
 if __name__ == "__main__":
     main()
