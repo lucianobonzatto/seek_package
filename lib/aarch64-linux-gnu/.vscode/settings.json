@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "seekcamera.h": "c",
+        "seekcamera_manager.h": "c"
+    }
+}
