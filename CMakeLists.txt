@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   geometry_msgs
   message_generation
+  cv_bridge
 )
 
 ## System dependencies are found with CMake's conventions
@@ -164,10 +165,10 @@ include
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+ catkin_install_python(PROGRAMS
+ script/seekcamera-opencv.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -210,8 +211,8 @@ include
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable( seek_node
-                src/seek_node.cpp
-)
-target_link_libraries(seek_node ${catkin_LIBRARIES})
+#add_executable( seek_node
+#                src/seek_node.cpp
+#)
+#target_link_libraries(seek_node ${catkin_LIBRARIES})
 # add_dependencies(seek_node seek_node_generate_messages_cpp)

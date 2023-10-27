@@ -100,8 +100,8 @@ def on_event(camera, event_type, event_status, renderer):
 
         # Set a custom color palette.
         # Other options can set in a similar fashion.
-        camera.color_palette = SeekCameraColorPalette.TYRIAN
-
+        # camera.color_palette = SeekCameraColorPalette.TYRIAN # Commented to another color pallet
+        camera.color_palette = SeekCameraColorPalette.BLACK_HOT
         # Start imaging and provide a custom callback to be called
         # every time a new frame is received.
         camera.register_frame_available_callback(on_frame, renderer)
@@ -128,9 +128,6 @@ def main():
     rospy.init_node('thermal_camera_publisher')
     image_publisher = rospy.Publisher('/thermal_camera/image', Image, queue_size=10)
     bridge = CvBridge()
-    
-    window_name = "Seek Thermal - Python OpenCV Sample"
-    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
 
     # Create a context structure responsible for managing all connected USB cameras.
     # Cameras with other IO types can be managed by using a bitwise or of the
@@ -147,30 +144,8 @@ def main():
             with renderer.frame_condition:
                 if renderer.frame_condition.wait(150.0 / 1000.0):
                     img = renderer.frame.data
-
-                    # Resize the rendering window.
-                    if renderer.first_frame:
-                        (height, width, _) = img.shape
-                        cv2.resizeWindow(window_name, width * 2, height * 2)
-                        renderer.first_frame = False
-
-                    # Render the image to the window.
                     image_msg = bridge.cv2_to_imgmsg(img)
                     image_publisher.publish(image_msg)
-                    
-                    cv2.imshow(window_name, img)
-
-            # Process key events.
-            key = cv2.waitKey(1)
-            if key == ord("q"):
-                break
-
-            # Check if the window has been closed manually.
-            if not cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE):
-                break
-
-    cv2.destroyWindow(window_name)
-
 
 if __name__ == "__main__":
     main()
