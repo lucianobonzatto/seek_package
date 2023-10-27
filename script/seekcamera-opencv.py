@@ -144,7 +144,8 @@ def main():
             with renderer.frame_condition:
                 if renderer.frame_condition.wait(150.0 / 1000.0):
                     img = renderer.frame.data
-                    image_msg = bridge.cv2_to_imgmsg(img)
+                    img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+                    image_msg = bridge.cv2_to_imgmsg(img, encoding="bgr8")
                     image_publisher.publish(image_msg)
 
 if __name__ == "__main__":
